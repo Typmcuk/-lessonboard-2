@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LessonBoard — Контейнеры</title>
+<style>
+:root{--bg:#f6f3ec;--card:#fffdf8;--ink:#1d1b16;--mu:#6b665a;--ln:#ddd6c6;--ac:#e4572e;--g:#1f6f5c;--ok:#e2f1ea;--bad:#fbe5df;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 Georgia,"Times New Roman",serif}
+.mono,code,pre{font-family:ui-monospace,Menlo,Consolas,monospace}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 8px}
+.logo{font-weight:700;font-size:22px}.logo b{color:var(--ac)}
+.hero{padding:22px 0 8px}
+.cells{display:flex;gap:6px;margin-bottom:14px}
+.cells span{width:44px;height:44px;border:2px solid var(--ink);display:grid;place-items:center;font:600 16px ui-monospace,Menlo,monospace;background:var(--card)}
+.cells span:nth-child(2){background:var(--ac);color:#fff;border-color:var(--ac)}
+.cells span:nth-child(4){background:var(--g);color:#fff;border-color:var(--g)}
+h1{font-size:clamp(34px,7vw,54px);line-height:1.08;margin:0 0 6px;letter-spacing:-.02em}
+.mu{color:var(--mu);font-size:15px}
+nav{display:flex;gap:0;margin:18px 0 20px;border-bottom:2px solid var(--ink);overflow-x:auto}
+nav button{flex:1;font:600 17px Georgia,serif;padding:12px 18px;border:0;background:none;color:var(--mu);cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px;white-space:nowrap}
+nav button.on{color:var(--ink);border-bottom-color:var(--ac)}
+h2{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--ac);margin:26px 0 10px;font-family:ui-monospace,Menlo,monospace}
+.card{background:var(--card);border:1.5px solid var(--ln);border-radius:12px;padding:14px 16px;margin:10px 0}
+.bar{height:10px;background:var(--ln);border-radius:6px;overflow:hidden;margin:8px 0 4px}.bar i{display:block;height:100%;background:var(--g);transition:width .3s}
+.t{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--ln)}
+.t input{width:24px;height:24px;accent-color:var(--g);flex:none}
+.t span{flex:1}.t.d span{text-decoration:line-through;color:var(--mu)}
+.x{border:0;background:none;color:var(--mu);font-size:22px;cursor:pointer;padding:4px 10px;border-radius:8px}.x:hover{background:var(--bad);color:var(--ac)}
+.add{display:flex;gap:8px;margin-top:14px}
+label{display:block;font-weight:700;margin:0 0 4px;font-size:16px}
+textarea{width:100%;min-height:80px;font:inherit;font-size:17px;padding:11px 13px;border:1.5px solid var(--ln);border-radius:10px;background:var(--card);color:var(--ink)}textarea:focus{outline:2px solid var(--ac)}
+input[type=text]{width:100%;flex:1;min-width:0;font:inherit;font-size:17px;padding:11px 13px;border:1.5px solid var(--ln);border-radius:10px;background:var(--card);color:var(--ink)}
+input[type=text]:focus{outline:2px solid var(--ac)}
+.btn{font:600 16px Georgia,serif;background:var(--ink);color:var(--bg);border:0;border-radius:10px;padding:11px 18px;cursor:pointer}
+.btn.a{background:var(--ac);color:#fff}
+details{background:var(--card);border:1.5px solid var(--ln);border-radius:12px;margin:10px 0;padding:0 16px}
+summary{cursor:pointer;font-weight:700;padding:14px 0;font-size:19px}
+details[open] summary{color:var(--ac)}
+details p{margin:0 0 12px}
+pre{background:#1d1b16;color:#f2eee2;padding:12px 14px;border-radius:10px;overflow-x:auto;font-size:15px;line-height:1.5;margin:0 0 14px}
+.tag{display:inline-block;font:600 13px ui-monospace,Menlo,monospace;background:var(--ok);color:var(--g);padding:2px 9px;border-radius:99px}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-size:17px;padding:11px 14px;margin:6px 0;border:1.5px solid var(--ln);background:var(--bg);color:var(--ink);border-radius:10px;cursor:pointer}
+.opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px rgba(228,87,46,.2)}
+.opt.r{background:var(--ok);border-color:var(--g)}.opt.w{background:var(--bad);border-color:var(--ac)}
+.score{font:700 38px ui-monospace,Menlo,monospace;color:var(--g)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 16px Georgia,serif;padding:9px 16px;border:1.5px solid var(--ln);border-radius:99px;background:var(--card);color:var(--ink);cursor:pointer}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--ac);margin-top:8px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.note{padding:12px;border-radius:4px 4px 16px 4px;box-shadow:0 4px 10px rgba(0,0,0,.14)}
+.note label,.note textarea{color:#2a2616}.note label{font-size:14px}
+.note textarea{background:rgba(255,255,255,.55);border:0;min-height:120px}
+.ticket{border:2px dashed var(--ac);border-radius:14px;padding:14px 16px;background:var(--card)}
+.hid{display:none}
+</style></head><body><div class="wrap">
+<nav id="nav"></nav><main id="v"></main></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const API="https://script.google.com/macros/s/AKfycbyHTAckE53TslL9YHded22GROfgXV0NMZNUvQKsqp-DbWCvP9Q0j_oRw6aw0PSapCDq/exec"; // адрес веб-приложения Google Apps Script (заканчивается на /exec)
+let reg=load("lb_reg",{name:"",grp:""}),R=load("lb_r",{}),SENT=load("lb_sent",null),TP=load("lb_pin",""),JR=[],JM="";
+let tab=load("lb_tab","lesson"),ans={},sub=false;
+const DEF={"v": 0, "topic": "Контейнеры", "goals": ["Познакомиться с понятием и структурой контейнеров данных", "Понять, чем отличаются массив, словарь, множество, стек и очередь", "Уметь выбрать подходящий контейнер под задачу"], "lec": [{"t": "Что такое контейнер", "b": "Контейнер — это структура, которая хранит и организует **набор элементов**. Вместо десяти переменных мы заводим один контейнер и работаем со всеми значениями сразу.\n\nДве базовые операции: **размер** — сколько элементов внутри, и **обход** — просмотр элементов по очереди.\n\n\n```\nnums = [4, 8, 15]\nprint(len(nums))      # 3\nfor x in nums: print(x)\n```"}, {"t": "Массив (список)", "b": "Элементы лежат по порядку, к каждому обращаются по **индексу**. Индексация идёт с нуля: в массиве из пяти элементов последний имеет индекс 4.\n\n\n```\na = [10, 20, 30, 40, 50]\nprint(a[0])    # 10\nprint(a[4])    # 50 — последний\n```"}, {"t": "Словарь", "b": "Хранит пары **«ключ — значение»**. Ищем не по номеру, а по ключу. Удобен для телефонной книги: код контакта — ключ, номер — значение.\n\n\n```\nbook = {\"A1\": \"+7 701 000 00 01\"}\nbook[\"B2\"] = \"+7 702 000 00 02\"\nprint(book[\"A1\"])\n```"}, {"t": "Множество", "b": "Хранит только **уникальные** элементы: повторы не сохраняются. Отлично подходит, чтобы получить уникальные названия городов из списка с повторами.\n\n\n```\ncities = [\"Алматы\",\"Астана\",\"Алматы\"]\nprint(set(cities))   # {'Алматы','Астана'}\n```"}, {"t": "Стек", "b": "Принцип **LIFO** — «последним пришёл, первым вышел». Как стопка тарелок: берём ту, что сверху. Если добавить 10, 20, 30, первым извлечётся 30.\n\n\n```\ns = []\ns.append(10); s.append(20); s.append(30)\nprint(s.pop())   # 30\n```"}, {"t": "Очередь", "b": "Принцип **FIFO** — «первым пришёл, первым вышел». Как очередь в кассу. Если добавить 10, 20, 30, первым извлечётся 10.\n\n\n```\nfrom collections import deque\nq = deque([10, 20, 30])\nprint(q.popleft())   # 10\n```"}], "quiz": [{"q": "Что называют контейнером данных?", "o": ["Структуру для хранения и организации набора элементов", "Команду завершения программы", "Устройство вывода информации", "Оператор проверки условия"], "a": 0}, {"q": "Как обращаются к элементу массива по его позиции?", "o": ["По цвету", "По имени файла", "По индексу", "По размеру экрана"], "a": 2}, {"q": "В массиве из пяти элементов индексация с нуля. Индекс последнего элемента?", "o": ["5", "1", "6", "4"], "a": 3}, {"q": "Какой контейнер хранит пары «ключ — значение»?", "o": ["Стек", "Словарь", "Очередь", "Множество"], "a": 1}, {"q": "В пустой стек добавили 10, 20, 30. Что извлекут первым?", "o": ["10", "20", "30", "Все сразу"], "a": 2}, {"q": "В пустую очередь добавили 10, 20, 30. Что извлекут первым?", "o": ["10", "20", "30", "Ничего"], "a": 0}, {"q": "Нужны уникальные названия городов из списка с повторами. Что подходит лучше?", "o": ["Стек", "Множество", "Очередь", "Массив с повторами"], "a": 1}, {"q": "В списке было 6 элементов. Добавили 2 и удалили 1. Сколько стало?", "o": ["6", "7", "8", "9"], "a": 1}, {"q": "Какое свойство характерно для множества?", "o": ["Оно хранит только строки", "У каждого элемента обязательно есть числовой индекс", "Одинаковые элементы не хранятся в нём как отдельные повторы", "Из него нельзя удалять элементы"], "a": 2}, {"q": "Для чего используют контейнеры данных?", "o": ["Только для оформления текста", "Для совместного хранения и обработки нескольких значений", "Только для запуска операционной системы", "Для замены всех переменных константами"], "a": 1}, {"q": "Какой контейнер удобнее для хранения телефонных номеров по уникальному коду контакта?", "o": ["Стек без ключей", "Очередь без ключей", "Множество кодов без номеров", "Словарь с кодом контакта в качестве ключа"], "a": 3}, {"q": "Что означает обход контейнера?", "o": ["Просмотр элементов по очереди для их обработки", "Удаление всех данных из программы", "Переименование файла программы", "Замена контейнера случайным числом"], "a": 0}, {"q": "Что означает размер контейнера?", "o": ["Число строк исходного кода", "Длина имени переменной", "Количество находящихся в нём элементов", "Количество функций в программе"], "a": 2}, {"q": "Какая структура работает по принципу «последним пришёл — первым вышел»?", "o": ["Очередь", "Стек", "Словарь", "Множество"], "a": 1}, {"q": "Какая структура работает по принципу «первым пришёл — первым вышел»?", "o": ["Словарь", "Множество", "Стек", "Очередь"], "a": 3}]};
+let C,GOALS,LEC,QZ,D=null,EM="",JD="",JDsel="";
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const dfmt=d=>{const p=String(d).split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:d};
+const P=()=>C.pts||{test:80,und:10,notes:10},tp=()=>Math.round(tsc()/100*P().test);
+const fmt=t=>String(t).split("```").map((x,i)=>i%2?`<pre>${esc(x.trim())}</pre>`:x.split(/\n\s*\n/).filter(y=>y.trim()).map(y=>`<p>${esc(y.trim()).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")}</p>`).join("")).join("");
+function apply(c){C=c;GOALS=c.goals;LEC=c.lec;QZ=c.quiz.map(x=>[x.q,x.o,x.a])}
+function setC(c){apply(c);save("lb_c",c);if(load("lb_v",0)!==c.v){R={};SENT=null;save("lb_r",R);save("lb_sent",null);save("lb_v",c.v)}}
+{const c=load("lb_c",null);apply(c&&c.quiz&&c.lec&&c.goals?c:DEF)}
+async function cload(){if(!API||API.startsWith("ВСТАВЬТЕ"))return;try{const r=await fetch(API+"?action=content"),d=await r.json();if(d.content&&d.content.quiz&&d.content.v!==C.v){setC(d.content);render()}}catch(e){}}
+function post(o){fetch(API,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)}).catch(()=>{})}
+function jourV(){if(!TP)return `<div class="card"><b>Журнал преподавателя</b><p class="mu">Введите PIN, который вы задали в скрипте Google.</p><input type="text" id="pin" placeholder="PIN" autocomplete="off"><div style="margin-top:10px"><button class="btn a" data-a="jpin">Войти</button></div></div>`;
+const ds=[...new Set(JR.map(x=>x.d))].sort().reverse(),sel=JD==="all"||ds.includes(JD)?JD:(ds[0]||"all");JDsel=sel;
+const tbl=d=>{const a=JR.filter(x=>x.d===d).sort((x,y)=>(x.g+x.n).localeCompare(y.g+y.n,"ru")),sc=a.filter(x=>x.s!=null),avg=sc.length?Math.round(sc.reduce((m,x)=>m+x.s,0)/sc.length):0;
+return `<h2>${dfmt(d)} · пришли ${a.length} · сдали ${sc.length} · средний балл ${avg}</h2><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><tr class="mu"><th align="left">№</th><th align="left">ФИО</th><th align="left">Группа</th><th align="left">Итоговый балл</th></tr>${a.map((x,i)=>`<tr style="border-top:1px dashed var(--ln)"><td>${i+1}</td><td>${esc(x.n)}</td><td>${esc(x.g)}</td><td>${x.s==null?'<span class="tag">на уроке</span>':`<b class="mono" style="color:${col(x.s)}">${x.s} / 100</b> <span class="mu">${lvl(x.s)}</span>`}</td></tr>`).join("")}</table></div>`};
+return `<div class="card"><b>Журнал преподавателя</b> <span class="mu">${esc(JM)}</span><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><select id="jd" style="font:inherit;font-size:16px;padding:10px;border-radius:10px;border:1.5px solid var(--ln);background:var(--card);color:var(--ink)"><option value="all" ${sel==="all"?"selected":""}>Все даты</option>${ds.map(d=>`<option value="${d}" ${sel===d?"selected":""}>${dfmt(d)}</option>`).join("")}</select><button class="btn a" data-a="jref">Обновить</button><button class="btn" style="background:#b42318;color:#fff" data-a="jclr">${sel==="all"?"Очистить весь журнал":"Удалить записи за "+dfmt(sel)}</button><button class="btn" data-a="jout">Выйти</button></div></div>
+${ds.length?ds.filter(d=>sel==="all"||d===sel).map(tbl).join(""):`<p class="mu">Пока никого нет.</p>`}`}
+function send(st){if(!API||API.startsWith("ВСТАВЬТЕ"))return false;const r=rsc();fetch(API,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({date:today(),name:reg.name,grp:reg.grp,status:st,total:st==="сдал"?cur():"",test:tp(),refl:r.t})}).catch(()=>{});return true}
+function cur(){return tp()+rsc().t}
+async function jload(){if(!TP)return;try{const r=await fetch(API+"?pin="+encodeURIComponent(TP)),d=await r.json();if(d.error){JM="Неверный PIN";JR=[]}else{JM="Обновлено "+new Date().toLocaleTimeString("ru");const m={};d.rows.forEach(x=>{const k=[x.d,String(x.n).trim(),String(x.g).trim()].join("|").toLowerCase(),o=m[k]||{d:x.d,n:x.n,g:x.g,s:null};if(x.st==="сдал"&&x.s!==""&&x.s!=null)o.s=+x.s;m[k]=o});JR=Object.values(m)}}catch(e){JM="Не удалось загрузить: проверьте адрес скрипта"}if(tab==="journal")render()}
+setInterval(()=>{if(tab==="journal"&&TP)jload()},15000);
+function lessonV(){
+return `<h1>Тема: ${esc(C.topic)}</h1>
+${reg.name?`<div class="card" style="border-color:var(--g);background:var(--ok)">✅ Вы зарегистрированы: <b>${esc(reg.name)}</b>, группа <b>${esc(reg.grp)}</b><div class="mu" style="margin-top:8px">Преподаватель видит, что вы на уроке ✓</div><div><button class="btn" style="margin-top:6px" data-a="unreg">Изменить</button></div></div>`:`<h2>Регистрация студента</h2><div class="card"><label for="rn">ФИО</label><input type="text" id="rn" maxlength="80" placeholder="Иванов Иван Иванович"><label for="rg" style="margin-top:12px">Группа</label><input type="text" id="rg" maxlength="30" placeholder="Например, ИС-21"><button class="btn a" style="margin-top:14px" data-a="reg">Зарегистрироваться</button></div>`}
+<h2>Цели урока</h2>${GOALS.map((g,i)=>`<div class="card"><b class="mono" style="color:var(--ac)">0${i+1}</b> ${esc(g)}</div>`).join("")}`}
+function lecV(){return `<p class="mu">Нажимайте на разделы, чтобы раскрыть их.</p>`+LEC.map((x,i)=>`<details ${i==0?"open":""}><summary>${i+1}. ${esc(x.t)}</summary>${fmt(x.b)}</details>`).join("")}
+function editV(){if(!D)D=JSON.parse(JSON.stringify(C));if(!D.pts)D.pts={...P()};
+return `<div class="card"><b>Редактор урока</b><p class="mu">Измените текст и нажмите «Сохранить для студентов». Изменения появятся у студентов при следующем открытии страницы, их старые ответы теста и рефлексии сбросятся.</p></div>
+<label>Тема</label><input type="text" data-e="topic" value="${esc(D.topic)}">
+<label style="margin-top:14px">Цели урока (по одной в строке)</label><textarea data-e="goals">${esc(D.goals.join("\n"))}</textarea>
+<h2>Баллы (в сумме 100)</h2><div class="card"><div style="display:flex;gap:12px;flex-wrap:wrap">${[["pt","Тест",D.pts.test],["pu","Понимание темы",D.pts.und],["pn","Заметки и билет",D.pts.notes]].map(([k,l,v])=>`<div style="flex:1;min-width:130px"><label>${l}</label><input type="text" inputmode="numeric" data-e="${k}" value="${v}"></div>`).join("")}</div><p class="mu" style="margin:10px 0 0">Сумма: <b id="psum">${D.pts.test+D.pts.und+D.pts.notes}</b> из 100. «Понимание» и «Заметки» вместе дают баллы за рефлексию.</p></div>
+<h2>Лекция</h2>${D.lec.map((x,i)=>`<div class="card"><button class="x" style="float:right" data-a="dl" data-i="${i}" aria-label="Удалить раздел">✕</button><label>Заголовок</label><input type="text" data-e="lt" data-i="${i}" value="${esc(x.t)}"><label style="margin-top:10px">Текст (пустая строка — новый абзац, код — между строками из &#96;&#96;&#96;, **жирный**)</label><textarea data-e="lb" data-i="${i}" style="min-height:150px">${esc(x.b)}</textarea></div>`).join("")}<button class="btn" data-a="al">+ Раздел</button>
+<h2>Тест</h2>${D.quiz.map((q,i)=>`<div class="card"><button class="x" style="float:right" data-a="dq" data-i="${i}" aria-label="Удалить вопрос">✕</button><label>Вопрос ${i+1}</label><input type="text" data-e="qq" data-i="${i}" value="${esc(q.q)}">${q.o.map((o,j)=>`<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="radio" name="k${i}" data-a="ka" data-i="${i}" data-j="${j}" ${q.a===j?"checked":""} style="width:22px;height:22px;flex:none;accent-color:var(--g)"><input type="text" data-e="qo" data-i="${i}" data-j="${j}" value="${esc(o)}" placeholder="${"ABCD"[j]}"></div>`).join("")}<p class="mu" style="margin:6px 0 0">Кружок отмечает правильный ответ.</p></div>`).join("")}<button class="btn" data-a="aq">+ Вопрос</button>
+<div style="margin-top:22px"><button class="btn a" data-a="esv">Сохранить для студентов</button> <button class="btn" data-a="ers">Вернуть исходный текст</button> <span class="mu">${esc(EM)}</span></div>`}
+function edIn(x){const e=x.dataset&&x.dataset.e;if(!e)return;const i=+x.dataset.i,j=+x.dataset.j;
+if(e==="topic")D.topic=x.value;else if(e==="goals")D.goals=x.value.split("\n").map(z=>z.trim()).filter(Boolean);else if(e==="lt")D.lec[i].t=x.value;else if(e==="lb")D.lec[i].b=x.value;else if(e==="qq")D.quiz[i].q=x.value;else if(e==="qo")D.quiz[i].o[j]=x.value;else if(e==="pt"||e==="pu"||e==="pn"){const k={pt:"test",pu:"und",pn:"notes"}[e];D.pts[k]=Math.max(0,Math.min(100,Math.round(+x.value)||0));const o=document.querySelector("#psum");if(o)o.textContent=D.pts.test+D.pts.und+D.pts.notes}}
+function esave(){const pin=TP||prompt("PIN преподавателя");if(!pin)return;
+if(!D.topic.trim()||!D.quiz.length||D.quiz.some(q=>!q.q.trim()||q.o.some(o=>!o.trim()))){EM="Заполните тему, все вопросы и варианты ответов";render();return}
+if(D.pts.test+D.pts.und+D.pts.notes!==100){EM="Сумма баллов должна быть ровно 100";render();return}
+const c={...D,v:Date.now()};post({action:"saveContent",pin,content:c});EM="Сохраняю…";render();
+setTimeout(async()=>{try{const r=await fetch(API+"?action=content"),d=await r.json();if(d.content&&d.content.v===c.v){setC(d.content);EM="Сохранено ✓";TP=pin;save("lb_pin",pin)}else EM="Не удалось сохранить: проверьте PIN и адрес скрипта"}catch(e){EM="Не удалось проверить сохранение"}render()},2500)}
+function testV(){const sc=QZ.reduce((a,q,i)=>a+(ans[i]===q[2]?1:0),0),p=Math.round(sc/QZ.length*100);
+return (sub?`<div class="card"><span class="mu">Ваш результат</span><div class="score">${sc}/${QZ.length} · ${p}%</div></div>`:"")+QZ.map((q,i)=>`<div class="card"><b class="mono">${i+1}.</b> ${esc(q[0])}${q[1].map((o,j)=>`<button class="opt ${sub?(j===q[2]?"r":ans[i]===j?"w":""):(ans[i]===j?"sel":"")}" data-a="ans" data-i="${i}" data-j="${j}"><b class="mono">${"ABCD"[j]}</b> ${esc(o)}</button>`).join("")}</div>`).join("")+(sub?`<button class="btn" data-a="retry">Пройти заново</button>`:`<button class="btn a" data-a="fin">Проверить ответы</button>`)}
+const lvl=p=>p>=90?"отлично":p>=70?"хорошо":p>=50?"удовлетворительно":"нужно повторить";
+const col=p=>p>=90?"#1f6f5c":p>=70?"#2563eb":p>=50?"#d97706":"#dc2626";
+function tsc(){return sub?Math.round(QZ.reduce((a,q,i)=>a+(ans[i]===q[2]?1:0),0)/QZ.length*100):0}
+function rsc(){const a=Math.round(+(R.un||0)/100*P().und),c=Math.round(["n1","n2","n3","ex"].reduce((x,f)=>{const n=(R[f]||"").trim().length;return x+(n>=10?P().notes/4:n>0?P().notes/8:0)},0));return{a,c,t:a+c}}
+function sum(){const r=rsc(),t=tp(),tot=t+r.t;
+const row=(l,v)=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--ln)"><span>${l}</span><b class="mono">${v}</b></div>`;
+return `<div class="card">${row("Тест",sub?t+" / "+P().test:"не сдан · 0 / "+P().test)}${row("Понимание темы",r.a+" / "+P().und)}${row("Заметки и билет на выход",r.c+" / "+P().notes)}${row("Рефлексия",r.t+" / "+(P().und+P().notes))}<div style="margin-top:12px"><span class="mu">Общий итог (тест ${P().test} + рефлексия ${P().und+P().notes})</span><div class="score" style="color:${col(tot)}">${tot} / 100 — ${lvl(tot)}</div><div class="bar"><i style="width:${tot}%;background:${col(tot)}"></i></div></div></div>`}
+function sendBox(){if(!reg.name)return `<div class="card" style="border-color:var(--ac)">Сначала зарегистрируйтесь на вкладке «Урок»: преподаватель увидит ваше ФИО и группу.</div>`;
+const c=cur(),st=SENT===null?"":SENT===c?"Отправлено ✓":"Баллы изменились, отправьте снова";
+return `<p>Нажмите, чтобы преподаватель увидел ваш итоговый балл в журнале.</p><button class="btn a" data-a="snd">Отправить результат</button> <span class="mu">${st}</span>`}
+function reflV(){const mw=["Бодро","Спокойно","Устал(а)","Запутался(лась)","Вдохновлён(а)"],u=+(R.un||0);
+const lb=u<30?"Пока туманно":u<60?"Местами понятно":u<85?"Понятно":"Могу объяснить другим";
+const nt=(f,l,c)=>`<div class="note" style="background:${c}"><label for="${f}">${l}</label><textarea id="${f}" data-f="${f}">${esc(R[f]||"")}</textarea></div>`;
+return `<h2>Моё состояние</h2><div class="chips">${mw.map(m=>`<button class="chip ${R.mw===m?"on":""}" data-a="mw" data-v="${m}">${m}</button>`).join("")}</div>
+<h2>Уровень понимания темы</h2><div class="card"><div class="mono" style="font-size:30px;font-weight:700;color:var(--ac)"><span id="unv">${u}%</span> <span class="mu" id="unl" style="font-weight:400">${lb}</span></div><input type="range" min="0" max="100" step="5" value="${u}" data-f="un" aria-label="Уровень понимания"></div>
+<h2>Мои заметки</h2><div class="notes">${nt("n1","Главное, что я понял(а)","#fde68a")}${nt("n2","Что хочу повторить","#bbf7d0")}${nt("n3","Вопрос преподавателю","#fbcfe8")}</div>
+<h2>Билет на выход</h2><div class="ticket"><label for="ex">Тема урока одним предложением</label><input type="text" id="ex" data-f="ex" maxlength="160" value="${esc(R.ex||"")}"></div>
+<h2>Итоговые баллы</h2><div id="rbox">${sum()}</div>
+<h2>Отправить в журнал</h2><div id="sbox">${sendBox()}</div>
+<p class="mu">Всё сохраняется автоматически.</p>`}
+function render(){if((tab==="journal"||tab==="edit")&&location.hash!=="#teacher")tab="lesson";$("#nav").innerHTML=[["lesson","Урок"],["lecture","Лекция"],["test","Тест"],["reflect","Рефлексия"]].concat(location.hash==="#teacher"?[["journal","Журнал"],["edit","Редактор"]]:[]).map(([k,l])=>`<button data-tab="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
+$("#v").innerHTML={lesson:lessonV,lecture:lecV,test:testV,reflect:reflV,journal:jourV,edit:editV}[tab]()}
+document.addEventListener("click",e=>{const b=e.target.closest("button,input");if(!b)return;const d=b.dataset;
+if(d.tab){tab=d.tab;save("lb_tab",tab);if(tab==="edit")D=null;render();if(tab==="journal")jload();window.scrollTo(0,0);return}
+if(d.a==="reg"){const n=$("#rn").value.trim(),g=$("#rg").value.trim();if(!n){$("#rn").focus();return}if(!g){$("#rg").focus();return}reg={name:n,grp:g};save("lb_reg",reg);send("на уроке");save("lb_day",today());render();return}
+if(d.a==="unreg"){reg={name:"",grp:""};save("lb_reg",reg);render();return}
+if(d.a==="snd"){if(!send("сдал")){alert("Адрес журнала не настроен. Сообщите преподавателю.");return}SENT=cur();save("lb_sent",SENT);const sb=$("#sbox");if(sb)sb.innerHTML=sendBox();return}
+if(d.a==="jpin"){TP=$("#pin").value.trim();if(TP){save("lb_pin",TP);jload();render()}return}
+if(d.a==="dl"){D.lec.splice(+d.i,1);render();return}
+if(d.a==="al"){D.lec.push({t:"",b:""});render();return}
+if(d.a==="dq"){D.quiz.splice(+d.i,1);render();return}
+if(d.a==="aq"){D.quiz.push({q:"",o:["","","",""],a:0});render();return}
+if(d.a==="ka"){D.quiz[+d.i].a=+d.j;return}
+if(d.a==="esv"){esave();return}
+if(d.a==="ers"){D=JSON.parse(JSON.stringify(DEF));render();return}
+if(d.a==="jclr"){if(confirm(JDsel==="all"?"Удалить ВСЕ записи журнала?":"Удалить записи за "+dfmt(JDsel)+"?")){post({action:"clear",pin:TP,date:JDsel==="all"?"":JDsel});JM="Удаляю…";render();setTimeout(jload,2000)}return}
+if(d.a==="jref"){jload();return}
+if(d.a==="jout"){TP="";save("lb_pin","");JR=[];render();return}
+if(d.a==="mw"){R.mw=d.v;save("lb_r",R);render();return}
+if(d.a==="ans"){if(!sub){ans[d.i]=+d.j;render()}return}
+if(d.a==="fin"){if(Object.keys(ans).length<QZ.length&&!confirm("Есть вопросы без ответа. Всё равно проверить?"))return;sub=true;render();window.scrollTo(0,0);return}
+if(d.a==="retry"){ans={};sub=false;render();window.scrollTo(0,0)}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.target.id==="rn"||e.target.id==="rg"))document.querySelector('[data-a="reg"]').click()});
+document.addEventListener("input",e=>{edIn(e.target);const f=e.target.dataset&&e.target.dataset.f;if(f){R[f]=e.target.value;save("lb_r",R);{const bx=$("#rbox");if(bx)bx.innerHTML=sum();const sb=$("#sbox");if(sb)sb.innerHTML=sendBox()}if(f==="un"){const v=+e.target.value;$("#unv").textContent=v+"%";$("#unl").textContent=v<30?"Пока туманно":v<60?"Местами понятно":v<85?"Понятно":"Могу объяснить другим"}}});
+window.addEventListener("hashchange",render);
+document.addEventListener("change",e=>{if(e.target.id==="jd"){JD=e.target.value;render()}});
+cload();if(reg.name&&load("lb_day","")!==today()){send("на уроке");save("lb_day",today())}
+render();if(tab==="journal")jload();
+</script></body></html>
